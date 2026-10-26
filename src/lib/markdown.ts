@@ -7,6 +7,9 @@ import footnote from 'markdown-it-footnote'
 import alerts from 'markdown-it-github-alerts'
 import taskLists from 'markdown-it-task-lists'
 import { parse as parseYaml } from 'yaml'
+import { slugify } from './slug'
+
+export { slugify }
 
 export interface Heading {
   level: number
@@ -35,16 +38,6 @@ const katexPlugin = (katexModule as unknown as { default?: typeof katexModule })
 
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/
 
-export function slugify(text: string): string {
-  return (
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^\p{L}\p{N}\s-]/gu, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-') || 'section'
-  )
-}
 
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true })
   .use(footnote)

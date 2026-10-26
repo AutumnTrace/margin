@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { ensureExtension } from './lib/files'
+import { nameFromHeading } from './lib/slug'
 import { loadPrefs, savePrefs, storage, type Doc } from './lib/storage'
 import { WELCOME } from './lib/welcome'
 
@@ -144,6 +145,7 @@ export const useStore = create<State>()((set, get) => {
         content: init.content ?? '',
         createdAt: now,
         updatedAt: now,
+        autoName: init.name === undefined,
       }
       set((s) => ({ docs: [...s.docs, doc], activeId: doc.id }))
       persist(doc)
@@ -151,13 +153,17 @@ export const useStore = create<State>()((set, get) => {
     },
 
     update(id, content) {
-      if (get().docs.find((d) => d.id === id)?.content === content) return
-      patch(id, { content })
+      const doc = get().docs.find((d) => d.id === id)
+      if (!doc || doc.content === content) return
+      // An automatic name follows the first heading until the user picks one.
+      const wanted = doc.autoName ? nameFromHeading(content) : null
+      const others = get().docs.filter((d) => d.id !== id)
+      patch(id, wanted && wanted !== doc.name ? { content, name: uniqueName(others, wanted) } : { content })
     },
 
     rename(id, name) {
       const others = get().docs.filter((d) => d.id !== id)
-      patch(id, { name: uniqueName(others, name) })
+      patch(id, { name: uniqueName(others, name), autoName: false })
     },
 
     remove(id) {

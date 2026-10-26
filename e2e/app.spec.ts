@@ -32,7 +32,7 @@ test('typing updates the preview and survives a reload', async ({ page }) => {
   await expect(page.getByRole('status').filter({ hasText: /Saved/ })).toBeVisible()
 
   await page.reload()
-  await expect(page.getByRole('textbox', { name: 'Document name' })).toHaveValue('untitled.md')
+  await expect(page.getByRole('textbox', { name: 'Document name' })).toHaveValue('trip-notes.md')
   await expect(preview(page).locator('h1')).toHaveText('Trip notes')
   await expect(page.getByRole('list', { name: 'Documents' }).getByRole('listitem')).toHaveCount(2)
 })

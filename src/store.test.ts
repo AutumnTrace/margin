@@ -18,9 +18,34 @@ describe('document store', () => {
     const a = create()
     const b = create()
     expect([a.name, b.name]).toEqual(['untitled.md', 'untitled-2.md'])
-    update(a.id, '# Changed')
+    update(a.id, 'Changed')
     flushSaves()
-    await vi.waitFor(async () => expect((await storage.all()).find((d) => d.id === a.id)?.content).toBe('# Changed'))
+    await vi.waitFor(async () => expect((await storage.all()).find((d) => d.id === a.id)?.content).toBe('Changed'))
+  })
+
+  it('names new documents after their first heading until renamed', () => {
+    const s = useStore.getState()
+    const name = (id: string) => useStore.getState().docs.find((d) => d.id === id)!.name
+    const doc = s.create()
+    s.update(doc.id, '# Trip')
+    expect(name(doc.id)).toBe('trip.md')
+    s.update(doc.id, '# Trip notes')
+    expect(name(doc.id)).toBe('trip-notes.md')
+
+    const twin = s.create()
+    s.update(twin.id, '# Trip notes')
+    expect(name(twin.id)).toBe('trip-notes-2.md')
+
+    s.rename(doc.id, 'packing')
+    s.update(doc.id, '# Something else')
+    expect(name(doc.id)).toBe('packing.md')
+  })
+
+  it('leaves opened and shared documents with their own names', () => {
+    const s = useStore.getState()
+    const doc = s.create({ name: 'readme.md', content: '' })
+    s.update(doc.id, '# Project')
+    expect(useStore.getState().docs.find((d) => d.id === doc.id)!.name).toBe('readme.md')
   })
 
   it('renames, duplicates, deletes and restores', () => {
