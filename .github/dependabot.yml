@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the editor and one for the renderer, so related packages move together.
+      codemirror:
+        patterns: ['@codemirror/*', '@lezer/*', 'codemirror']
+      render:
+        patterns: ['markdown-it*', '@vscode/markdown-it-katex', 'katex', 'highlight.js', 'dompurify', 'mermaid']
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
