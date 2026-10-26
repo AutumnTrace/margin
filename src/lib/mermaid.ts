@@ -11,9 +11,22 @@ function load(): Promise<Mermaid> {
   return loading
 }
 
-function themeVars(): Record<string, string> {
+// Light-theme token values (see tokens.css), for exports that must look right on paper.
+const LIGHT: Record<string, string> = {
+  '--font-mono': "'IBM Plex Mono', ui-monospace, monospace",
+  '--raised': '#ffffff',
+  '--panel': '#f7f8f7',
+  '--ink': '#0f1112',
+  '--ink-3': '#80868a',
+  '--line-2': '#c9cdca',
+  '--code-bg': '#eef0ee',
+  '--accent': '#d4ff3a',
+}
+
+/** Mermaid theme variables from the live CSS tokens, or from a fixed palette. */
+function themeVars(palette?: Record<string, string>): Record<string, string> {
   const css = getComputedStyle(document.documentElement)
-  const v = (name: string) => css.getPropertyValue(name).trim()
+  const v = (name: string) => palette?.[name] ?? css.getPropertyValue(name).trim()
   return {
     fontFamily: v('--font-mono') || 'monospace',
     fontSize: '13px',
@@ -71,6 +84,26 @@ export async function drawDiagrams(root: HTMLElement, theme: string): Promise<vo
       block.dataset.drawn = 'error'
       block.classList.add('mermaid-error')
       block.textContent = `Diagram error: ${(e as Error).message.split('\n')[0]}`
+    }
+  }
+}
+
+/**
+ * Redraws every diagram inside `root` (a detached copy of the preview) in light colours, so
+ * exports look the same whatever theme the app is in.
+ */
+export async function drawLightDiagrams(root: HTMLElement): Promise<void> {
+  const blocks = [...root.querySelectorAll<HTMLElement>('.mermaid[data-source]')]
+  if (!blocks.length) return
+  const mermaid = await load()
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'base', themeVariables: themeVars(LIGHT), flowchart: { curve: 'basis' } })
+  configuredFor = '' // The preview re-applies its own theme on the next draw.
+  for (const block of blocks) {
+    try {
+      const { svg } = await mermaid.render(`mermaid-export-${++counter}`, block.dataset.source!)
+      paint(block, svg)
+    } catch {
+      // Leave the preview's copy in place.
     }
   }
 }

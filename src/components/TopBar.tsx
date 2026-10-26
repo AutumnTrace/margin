@@ -152,8 +152,8 @@ export function TopBar({ onPalette }: { onPalette: () => void }) {
             { label: 'Open files…', icon: 'upload', hint: keyLabel('Mod+O'), run: () => void openFiles() },
             { label: 'Save to disk', icon: 'save', hint: keyLabel('Mod+S'), run: () => void saveToDisk() },
             { label: 'Download .md', icon: 'file', run: exportMarkdown },
-            { label: 'Export HTML page', icon: 'code', run: exportHtml },
-            { label: 'Export PDF', icon: 'download', hint: 'print', run: exportPdf },
+            { label: 'Export HTML page', icon: 'code', run: () => void exportHtml() },
+            { label: 'Export PDF', icon: 'download', hint: 'print', run: () => void exportPdf() },
           ]}
         />
         <button

@@ -1,5 +1,6 @@
 import { editor } from './editor/bridge'
 import { canUseFileSystem, download, pickFiles, saveAs, writeHandle, type OpenedFile } from './lib/files'
+import { drawLightDiagrams } from './lib/mermaid'
 import { shareUrl } from './lib/share'
 import { storage } from './lib/storage'
 import { WELCOME } from './lib/welcome'
@@ -98,24 +99,33 @@ ${body}
 `
 }
 
-export function exportHtml() {
+/** The rendered preview as HTML, with diagrams redrawn in light colours for paper and other screens. */
+async function exportBody(el: HTMLElement): Promise<string> {
+  const copy = el.cloneNode(true) as HTMLElement
+  await drawLightDiagrams(copy)
+  return copy.innerHTML
+}
+
+export async function exportHtml() {
   const doc = active()
   const el = previewElement.current
   if (!doc || !el) return toast('Open the preview to export HTML')
-  download(`${stem(doc.name)}.html`, buildHtml(stem(doc.name), el.innerHTML, useStore.getState().readingFont), 'text/html;charset=utf-8')
+  const body = await exportBody(el)
+  download(`${stem(doc.name)}.html`, buildHtml(stem(doc.name), body, useStore.getState().readingFont), 'text/html;charset=utf-8')
 }
 
-export function exportPdf() {
+export async function exportPdf() {
   const doc = active()
   const el = previewElement.current
   if (!doc || !el) return toast('Open the preview to export PDF')
+  const body = await exportBody(el)
   let print = document.getElementById('print')
   if (!print) {
     print = document.createElement('div')
     print.id = 'print'
     document.body.append(print)
   }
-  print.innerHTML = `<article class="md" data-font="${useStore.getState().readingFont}">${el.innerHTML}</article>`
+  print.innerHTML = `<article class="md" data-font="${useStore.getState().readingFont}">${body}</article>`
   const title = document.title
   document.title = stem(doc.name) // Becomes the PDF's default file name.
   window.print()

@@ -131,3 +131,26 @@ test('view modes and focus mode', async ({ page }) => {
   await page.keyboard.press('Escape')
   await expect(page.getByRole('banner')).toBeVisible()
 })
+
+test('HTML export draws diagrams in light colours even in dark mode', async ({ page }) => {
+  await page.getByRole('button', { name: /^Theme/ }).click() // system → light
+  await page.getByRole('button', { name: /^Theme/ }).click() // light → dark
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(page.locator('article.md .mermaid svg')).toBeVisible({ timeout: 15_000 })
+
+  await page.getByRole('button', { name: 'Open, save and export' }).click()
+  const download = page.waitForEvent('download')
+  await page.getByRole('menuitem', { name: 'Export HTML page' }).click()
+  const html = await (await download).createReadStream().then(
+    (stream) =>
+      new Promise<string>((resolve) => {
+        let text = ''
+        stream.on('data', (chunk) => (text += chunk))
+        stream.on('end', () => resolve(text))
+      }),
+  )
+  // The page itself carries both themes' CSS, so look only at the diagram's SVG.
+  const diagram = /<div class="mermaid"[^>]*>(<svg[\s\S]*?<\/svg>)/.exec(html)?.[1] ?? ''
+  expect(diagram).toContain('#ffffff')
+  expect(diagram).not.toContain('#17191b') // the dark theme's raised surface
+})
