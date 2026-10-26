@@ -5,6 +5,7 @@ import { CommandPalette } from './components/CommandPalette'
 import { EditorPane } from './components/EditorPane'
 import { Icon, Logo } from './components/Icon'
 import { PreviewPane } from './components/PreviewPane'
+import { ShortcutsSheet } from './components/ShortcutsSheet'
 import { Sidebar } from './components/Sidebar'
 import { StatusBar } from './components/StatusBar'
 import { Toasts } from './components/Toasts'
@@ -98,6 +99,7 @@ export default function App() {
   const view = useStore((s) => s.view)
   const sidebarPref = useStore((s) => s.sidebar)
   const drawer = useStore((s) => s.drawer)
+  const showShortcuts = useStore((s) => s.shortcuts)
   const focus = useStore((s) => s.focus)
   const split = useStore((s) => s.split)
   const setPrefs = useStore((s) => s.setPrefs)
@@ -107,6 +109,7 @@ export default function App() {
   const [palette, setPalette] = useState(false)
   const [dragging, setDragging] = useState(false)
   const panes = useRef<HTMLDivElement>(null)
+  const closeShortcuts = useCallback(() => useStore.setState({ shortcuts: false }), [])
 
   useEffect(() => {
     void useStore
@@ -147,6 +150,12 @@ export default function App() {
         ['Mod+\\', () => useStore.getState().toggleLibrary()],
         ['Mod+.', () => setPrefs({ focus: !useStore.getState().focus })],
       ]
+      // "?" opens the shortcuts sheet, unless it is being typed somewhere.
+      if (e.key === '?' && !(e.target as HTMLElement).closest?.('input, textarea, [contenteditable="true"]')) {
+        e.preventDefault()
+        useStore.setState({ shortcuts: true })
+        return
+      }
       for (const [combo, run] of shortcuts) {
         if (matches(e, combo)) {
           e.preventDefault()
@@ -246,6 +255,7 @@ export default function App() {
       {!focus && <StatusBar />}
 
       {palette && <CommandPalette onClose={() => setPalette(false)} headings={rendered.headings} />}
+      {showShortcuts && <ShortcutsSheet onClose={closeShortcuts} />}
       <Toasts />
 
       {dragging && (

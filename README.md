@@ -78,6 +78,7 @@ Built with **React 19**, **TypeScript**, **CodeMirror 6**, **markdown-it** and *
 | `Ctrl Shift 7` / `8` / `9` | Numbered / bulleted / task list |
 | `Ctrl Alt 1` / `2` / `3` | Heading 1 / 2 / 3 |
 | `Ctrl F` | Find and replace |
+| `?` | Keyboard shortcuts sheet |
 
 On a Mac, `Ctrl` is `⌘`.
 

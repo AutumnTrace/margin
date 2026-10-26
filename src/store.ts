@@ -38,6 +38,8 @@ interface State extends Prefs {
   ready: boolean
   /** The library as an overlay on small screens; not remembered. */
   drawer: boolean
+  /** The keyboard shortcuts sheet is open. */
+  shortcuts: boolean
   docs: Doc[]
   saveState: SaveState
   lastSavedAt: number | null
@@ -122,6 +124,7 @@ export const useStore = create<State>()((set, get) => {
     ...loadPrefs(DEFAULT_PREFS),
     ready: false,
     drawer: false,
+    shortcuts: false,
     docs: [],
     saveState: 'saved',
     lastSavedAt: null,
