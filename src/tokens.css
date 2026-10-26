@@ -1,0 +1,59 @@
+/* Design tokens. Shared by the app and by "Export HTML", which inlines this file. */
+:root {
+  color-scheme: light;
+  --bg: #eceeed;
+  --panel: #f7f8f7;
+  --raised: #ffffff;
+  --line: #dcdfdd;
+  --line-2: #c9cdca;
+  --ink: #0f1112;
+  --ink-2: #464b4f;
+  --ink-3: #80868a;
+  --accent: #d4ff3a;
+  --accent-ink: #4a6800;
+  --accent-line: #a8d11c;
+  --on-accent: #0c0d0e;
+  --code-bg: #eef0ee;
+  --selection: rgb(212 255 58 / 0.55);
+  --danger: #c4361d;
+
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'IBM Plex Serif', ui-serif, Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0b0c0d;
+    --panel: #111314;
+    --raised: #17191b;
+    --line: #212427;
+    --line-2: #2e3236;
+    --ink: #e6e8e9;
+    --ink-2: #a5abaf;
+    --ink-3: #697075;
+    --accent-ink: #d4ff3a;
+    --accent-line: rgb(212 255 58 / 0.5);
+    --code-bg: #15181a;
+    --selection: rgb(212 255 58 / 0.22);
+    --danger: #ff7a5c;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b0c0d;
+  --panel: #111314;
+  --raised: #17191b;
+  --line: #212427;
+  --line-2: #2e3236;
+  --ink: #e6e8e9;
+  --ink-2: #a5abaf;
+  --ink-3: #697075;
+  --accent-ink: #d4ff3a;
+  --accent-line: rgb(212 255 58 / 0.5);
+  --code-bg: #15181a;
+  --selection: rgb(212 255 58 / 0.22);
+  --danger: #ff7a5c;
+}

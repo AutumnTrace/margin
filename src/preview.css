@@ -1,0 +1,586 @@
+/*
+ * The rendered document. Also inlined into "Export HTML", so it only relies on the tokens
+ * declared on :root (which the export copies) and on the .md class.
+ */
+.md {
+  --measure: 70ch;
+  --body-font: var(--font-sans);
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 40px 56px 30vh 64px;
+  font-family: var(--body-font);
+  font-size: 16px;
+  line-height: 1.72;
+  color: var(--ink-2);
+  overflow-wrap: break-word;
+}
+.md[data-font='serif'] {
+  --body-font: var(--font-serif);
+  font-size: 17px;
+}
+.md[data-font='mono'] {
+  --body-font: var(--font-mono);
+  --measure: 76ch;
+  font-size: 14px;
+}
+
+.md > :first-child {
+  margin-top: 0;
+}
+
+.md h1,
+.md h2,
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+  position: relative;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 2.1em 0 0.6em;
+  scroll-margin-top: 24px;
+}
+.md[data-font='serif'] :is(h1, h2, h3) {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+.md[data-font='mono'] :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+.md h1 {
+  font-size: 2.15em;
+  letter-spacing: -0.03em;
+  margin-top: 0.4em;
+}
+.md h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--line);
+}
+.md h3 {
+  font-size: 1.2em;
+}
+.md h4 {
+  font-size: 1em;
+}
+.md h5,
+.md h6 {
+  font-size: 0.875em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* The heading's markdown hashes hang in the left margin, in the signal colour. */
+.md :is(h1, h2, h3, h4, h5, h6)::before {
+  position: absolute;
+  right: calc(100% + 0.6rem);
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: calc(1.2em / 0.62);
+  color: var(--accent-ink);
+  opacity: 0.85;
+  white-space: nowrap;
+}
+.md h1::before {
+  content: '#';
+  font-size: 0.5em;
+  line-height: calc(1.2em / 0.5);
+}
+.md h2::before {
+  content: '##';
+}
+.md h3::before {
+  content: '###';
+  font-size: 0.7em;
+  line-height: calc(1.2em / 0.7);
+}
+.md h4::before {
+  content: '####';
+  font-size: 0.75em;
+  line-height: calc(1.2em / 0.75);
+}
+.md h5::before,
+.md h6::before {
+  content: none;
+}
+
+.md p,
+.md ul,
+.md ol,
+.md blockquote,
+.md table,
+.md figure,
+.md dl,
+.md .mermaid,
+.md .math-block,
+.md .katex-display,
+.md .markdown-alert {
+  margin: 0 0 1.15em;
+}
+
+.md strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.md a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: background-color 120ms;
+}
+.md a:hover {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.md ul,
+.md ol {
+  padding-left: 1.4em;
+}
+.md ul {
+  list-style: disc;
+}
+.md ol {
+  list-style: decimal;
+}
+.md ul ul {
+  list-style: circle;
+}
+.md li + li {
+  margin-top: 0.25em;
+}
+.md li > ul,
+.md li > ol {
+  margin: 0.25em 0 0;
+}
+.md ul > li::marker {
+  color: var(--ink-3);
+}
+.md ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--ink-3);
+}
+
+/* Task lists: square checkboxes, ticked in lime. */
+.md .contains-task-list {
+  list-style: none;
+  padding-left: 0.2em;
+}
+.md .task-list-item {
+  display: flex;
+  gap: 0.6em;
+  align-items: baseline;
+}
+.md .task-list-item-checkbox {
+  appearance: none;
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  transform: translateY(2px);
+  border: 1.5px solid var(--ink-3);
+  border-radius: 2px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition:
+    background-color 120ms,
+    border-color 120ms;
+}
+.md .task-list-item-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.md .task-list-item-checkbox:checked::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid var(--on-accent);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+.md .task-list-item:has(> .task-list-item-checkbox:checked) {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--line-2);
+}
+
+.md blockquote {
+  padding: 0.1em 0 0.1em 1.1em;
+  border-left: 2px solid var(--ink);
+  color: var(--ink-2);
+  font-style: italic;
+}
+.md[data-font='mono'] blockquote {
+  font-style: normal;
+}
+
+.md hr {
+  height: 0;
+  margin: 2.4em 0;
+  border: 0;
+  border-top: 1px dashed var(--line-2);
+}
+
+.md img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+}
+
+/* Inline code and code blocks */
+.md code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.12em 0.36em;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--code-bg);
+  color: var(--ink);
+}
+.md figure.code {
+  margin-left: 0;
+  margin-right: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--code-bg);
+  overflow: hidden;
+}
+.md figure.code figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 6px 0 14px;
+  height: 32px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.md figure.code .copy {
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.md figure.code .copy:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+.md figure.code .copy[data-done] {
+  color: var(--accent-ink);
+}
+.md pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+.md pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* Tables: hairlines, mono header. */
+.md table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.md th,
+.md td {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.md th {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: var(--code-bg);
+}
+.md tr:hover td {
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+}
+
+/* Front matter: a properties sheet above the document. */
+.md .front-matter {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  margin-bottom: 2.4em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.md .front-matter dt,
+.md .front-matter dd {
+  margin: 0;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.md .front-matter dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-right: 1px solid var(--line);
+  background: var(--code-bg);
+}
+.md .front-matter :is(dt, dd):nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.md .front-matter dd {
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.md .chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0 7px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+}
+
+/* GitHub alerts: a coloured rule, a mono title. */
+.md .markdown-alert {
+  --alert: var(--ink-3);
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--alert);
+  border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--alert) 6%, transparent);
+  font-style: normal;
+}
+.md .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+.md .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--alert);
+}
+.md .markdown-alert-title svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+.md .markdown-alert-note {
+  --alert: #3b82f6;
+}
+.md .markdown-alert-tip {
+  --alert: var(--accent-ink);
+}
+.md .markdown-alert-important {
+  --alert: #a855f7;
+}
+.md .markdown-alert-warning {
+  --alert: #d97706;
+}
+.md .markdown-alert-caution {
+  --alert: var(--danger);
+}
+
+/* Math and diagrams */
+.md .katex-display,
+.md .math-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0;
+}
+.md .katex {
+  font-size: 1.08em;
+  color: var(--ink);
+}
+.md .mermaid {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background:
+    radial-gradient(circle, var(--line) 1px, transparent 1.2px) 0 0 / 14px 14px,
+    var(--panel);
+  overflow-x: auto;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.md .mermaid[data-drawn='ok'] {
+  white-space: normal;
+}
+.md .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+.md .mermaid-error {
+  justify-content: flex-start;
+  white-space: normal;
+  color: var(--danger);
+  background: var(--code-bg);
+}
+
+/* Footnotes */
+.md .footnote-ref a,
+.md .footnote-backref {
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  color: var(--accent-ink);
+}
+.md .footnotes-sep {
+  margin-top: 3em;
+}
+.md .footnotes {
+  font-size: 0.88em;
+  color: var(--ink-3);
+}
+
+/* highlight.js tokens, mapped onto a restrained palette that works on both themes. */
+.hljs-comment,
+.hljs-quote {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-meta .hljs-keyword {
+  color: #7c5cff;
+}
+.hljs-string,
+.hljs-attr .hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: #2f8f4e;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-symbol {
+  color: #c2410c;
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-section {
+  color: #0a7ea4;
+}
+.hljs-type,
+.hljs-title.class_,
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable.language_ {
+  color: #b45309;
+}
+.hljs-deletion {
+  color: var(--danger);
+}
+.hljs-meta,
+.hljs-punctuation {
+  color: var(--ink-3);
+}
+:root[data-theme='dark'] .hljs-keyword,
+:root[data-theme='dark'] .hljs-built_in {
+  color: #b9a6ff;
+}
+:root[data-theme='dark'] .hljs-string,
+:root[data-theme='dark'] .hljs-regexp {
+  color: #a6e3a1;
+}
+:root[data-theme='dark'] .hljs-number,
+:root[data-theme='dark'] .hljs-literal {
+  color: #fab387;
+}
+:root[data-theme='dark'] :is(.hljs-title, .hljs-section) {
+  color: #89dceb;
+}
+:root[data-theme='dark'] :is(.hljs-type, .hljs-attr, .hljs-attribute) {
+  color: #f9e2af;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .hljs-keyword,
+  :root:not([data-theme]) .hljs-built_in {
+    color: #b9a6ff;
+  }
+  :root:not([data-theme]) :is(.hljs-string, .hljs-regexp) {
+    color: #a6e3a1;
+  }
+  :root:not([data-theme]) :is(.hljs-number, .hljs-literal) {
+    color: #fab387;
+  }
+  :root:not([data-theme]) :is(.hljs-title, .hljs-section) {
+    color: #89dceb;
+  }
+  :root:not([data-theme]) :is(.hljs-type, .hljs-attr, .hljs-attribute) {
+    color: #f9e2af;
+  }
+}
+
+@media (max-width: 767px) {
+  .md {
+    padding: 24px 18px 30vh;
+    font-size: 15.5px;
+  }
+  .md :is(h1, h2, h3, h4)::before {
+    content: none;
+  }
+}
+
+@media print {
+  #print .md {
+    --bg: #fff;
+    --panel: #fff;
+    --raised: #fff;
+    --line: #dcdfdd;
+    --line-2: #c9cdca;
+    --ink: #0f1112;
+    --ink-2: #2e3236;
+    --ink-3: #6b7176;
+    --accent-ink: #4a6800;
+    --accent-line: #a8d11c;
+    --code-bg: #f4f5f4;
+    max-width: none;
+    padding: 0 0 0 40px;
+    font-size: 11pt;
+  }
+  #print .md figure.code .copy {
+    display: none;
+  }
+  #print .md :is(h1, h2, h3, figure, table, .mermaid) {
+    break-inside: avoid;
+  }
+}

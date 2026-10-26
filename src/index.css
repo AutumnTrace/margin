@@ -1,0 +1,285 @@
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+@import '@fontsource/ibm-plex-serif/400.css';
+@import '@fontsource/ibm-plex-serif/400-italic.css';
+@import '@fontsource/ibm-plex-serif/600.css';
+@import 'katex/dist/katex.min.css';
+@import 'tailwindcss';
+@import './tokens.css';
+@import './preview.css';
+
+/*
+ * Margin's look: graphite (or cool paper) surfaces, hairline rules, square corners, IBM Plex,
+ * and one signal colour, a lime that marks the margin line, the caret and anything active.
+ * Components only use these tokens, so the dark theme is a swap of values.
+ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+  --color-code: var(--code-bg);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent-line);
+    outline-offset: 1px;
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+
+@layer components {
+/* Small uppercase mono labels: pane headers, section titles, kbd hints. */
+.ui-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+kbd,
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 1px 5px;
+  border: 1px solid var(--line-2);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  color: var(--ink-2);
+  background: var(--raised);
+}
+
+/* Icon buttons in bars and toolbars. */
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 6px;
+  border-radius: 3px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background-color 120ms,
+    color 120ms;
+}
+.tool:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+.tool[aria-pressed='true'] {
+  color: var(--ink);
+  background: var(--line);
+}
+.tool:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.animate-rise {
+  animation: rise 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.animate-fade {
+  animation: fade 140ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* CodeMirror: the editor takes its look from the same tokens. */
+.cm-editor {
+  height: 100%;
+  font-size: var(--editor-size, 14px);
+  background: transparent;
+}
+.cm-editor.cm-focused {
+  outline: none;
+}
+.cm-scroller {
+  font-family: var(--font-mono) !important;
+  line-height: 1.7 !important;
+}
+.cm-content {
+  padding: 28px 0 40vh !important;
+  caret-color: var(--accent-ink);
+}
+.cm-line {
+  padding: 0 32px 0 22px !important;
+}
+.cm-gutters {
+  background: transparent !important;
+  border-right: 1px solid var(--accent-line) !important;
+  color: var(--ink-3) !important;
+  font-size: 11px;
+  min-width: 52px;
+}
+.cm-lineNumbers .cm-gutterElement {
+  padding: 0 12px 0 14px !important;
+  font-variant-numeric: tabular-nums;
+}
+.cm-activeLine {
+  background: color-mix(in srgb, var(--ink) 3.5%, transparent) !important;
+}
+.cm-activeLineGutter {
+  background: transparent !important;
+  color: var(--ink) !important;
+}
+.cm-cursor {
+  border-left: 2px solid var(--accent-ink) !important;
+}
+.cm-selectionBackground,
+.cm-focused .cm-selectionBackground,
+.cm-content ::selection {
+  background: var(--selection) !important;
+}
+.cm-selectionMatch {
+  background: color-mix(in srgb, var(--accent) 22%, transparent) !important;
+}
+.cm-matchingBracket {
+  background: color-mix(in srgb, var(--accent) 35%, transparent) !important;
+  outline: none !important;
+}
+.cm-placeholder {
+  color: var(--ink-3) !important;
+}
+.cm-panels {
+  background: var(--panel) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.cm-panels input,
+.cm-panels button {
+  font: inherit;
+  border-radius: 3px;
+}
+.cm-textfield {
+  background: var(--raised) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink);
+}
+.cm-button {
+  background: var(--raised) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink) !important;
+}
+.cm-searchMatch {
+  background: color-mix(in srgb, var(--accent) 30%, transparent) !important;
+  outline: 1px solid var(--accent-line);
+}
+.cm-searchMatch-selected {
+  background: var(--accent) !important;
+  color: var(--on-accent);
+}
+.cm-tooltip {
+  background: var(--raised) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink);
+}
+.no-gutter .cm-gutters {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .cm-line {
+    padding: 0 16px 0 14px !important;
+  }
+  .cm-gutters {
+    min-width: 0;
+  }
+}
+
+/* Print / "Export PDF": the app hides and a copy of the rendered document takes its place. */
+#print {
+  display: none;
+}
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  body {
+    overflow: visible;
+    background: #fff;
+  }
+  #root {
+    display: none !important;
+  }
+  #print {
+    display: block;
+  }
+}
+
+/* Focus mode: no chrome, no gutter, a centred column of text. */
+.focus-mode .cm-gutters {
+  display: none;
+}
+.focus-mode .cm-content {
+  max-width: 76ch;
+  margin: 0 auto;
+  padding-top: 12vh !important;
+}
