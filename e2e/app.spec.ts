@@ -154,3 +154,23 @@ test('HTML export draws diagrams in light colours even in dark mode', async ({ p
   expect(diagram).toContain('#ffffff')
   expect(diagram).not.toContain('#17191b') // the dark theme's raised surface
 })
+
+test('"?" opens the keyboard shortcuts sheet, but not while typing', async ({ page }) => {
+  await page.locator('body').press('?')
+  const sheet = page.getByRole('dialog', { name: 'Keyboard shortcuts' })
+  await expect(sheet).toBeVisible()
+  await expect(sheet).toContainText('Command palette')
+  await expect(sheet).toContainText('Ctrl K')
+  await page.keyboard.press('Escape')
+  await expect(sheet).toBeHidden()
+
+  await newDoc(page)
+  await page.keyboard.type('Why?')
+  await expect(editor(page)).toHaveText('Why?')
+  await expect(sheet).toBeHidden()
+
+  await page.keyboard.press('ControlOrMeta+k')
+  await page.keyboard.type('keyboard')
+  await page.keyboard.press('Enter')
+  await expect(sheet).toBeVisible()
+})

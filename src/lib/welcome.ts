@@ -35,6 +35,7 @@ Checkboxes in the preview are live. Click one and the source updates.
 | Ctrl O | Open markdown files |
 | Alt 1 / 2 / 3 | Write, split or read view |
 | Ctrl . | Focus mode |
+| ? | Every shortcut on one sheet |
 
 ## Code
 

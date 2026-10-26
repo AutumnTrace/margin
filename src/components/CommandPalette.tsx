@@ -56,6 +56,7 @@ function actions(): Entry[] {
     ),
     { id: 'find', group: 'Actions', label: 'Find and replace', hint: 'Mod+F', icon: 'search', run: () => editor.view && import('@codemirror/search').then((m) => m.openSearchPanel(editor.view!)) },
     { id: 'delete', group: 'Actions', label: 'Delete this document', icon: 'trash', run: () => s.activeId && removeDocument(s.activeId) },
+    { id: 'shortcuts', group: 'Actions', label: 'Keyboard shortcuts', hint: '?', icon: 'command', run: () => useStore.setState({ shortcuts: true }) },
     { id: 'welcome', group: 'Actions', label: 'Restore welcome guide', icon: 'restore', run: restoreWelcome },
     { id: 'source', group: 'Actions', label: 'View source on GitHub', icon: 'github', run: () => window.open('https://github.com/AutumnTrace/margin', '_blank', 'noopener') },
     insert('table', 'Insert table', 'table'),
