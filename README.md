@@ -11,7 +11,7 @@ Built with **React 19**, **TypeScript**, **CodeMirror 6**, **markdown-it** and *
 ![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![CodeMirror](https://img.shields.io/badge/CodeMirror-6-d30707)
-![Tests](https://img.shields.io/badge/tests-31%20unit%20%C2%B7%2010%20e2e-brightgreen)
+![Tests](https://img.shields.io/badge/tests-38%20unit%20%C2%B7%2012%20e2e-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ### [▶ Open Margin](https://autumntrace.github.io/margin/)
@@ -119,8 +119,8 @@ npm run dev          # http://localhost:5173
 
 ## Tests
 
-- **Unit (31)**: rendering (GFM, front matter offsets, math, diagrams, alerts, footnotes, heading ids, and **XSS sanitisation**), share-link round trips, word counts and snippets, fuzzy matching, every editor command, and the store's create/rename/duplicate/delete/restore with real IndexedDB writes.
-- **End-to-end (10)**: the welcome guide renders, typing persists across a reload, shortcuts and toolbar, live checkboxes, the command palette, share links opened in a second tab, rename/download/delete with undo, script injection attempts, view modes and focus mode, and a mobile run.
+- **Unit (38)**: rendering (GFM, front matter offsets, math, diagrams, alerts, footnotes, heading ids, and **XSS sanitisation**), share-link round trips, word counts and snippets, fuzzy matching, heading-based file names, every editor command, and the store's create/rename/duplicate/delete/restore with real IndexedDB writes.
+- **End-to-end (12)**: the welcome guide renders, typing persists across a reload, shortcuts and toolbar, live checkboxes, the command palette, share links opened in a second tab, rename/download/delete with undo, script injection attempts, view modes and focus mode, the shortcuts sheet, light diagrams in exports from dark mode, and a mobile run.
 
 ## License
 
