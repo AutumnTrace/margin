@@ -6,6 +6,8 @@ export interface Doc {
   content: string
   createdAt: number
   updatedAt: number
+  /** True while the name is automatic: it then follows the first heading. */
+  autoName?: boolean
 }
 
 // Documents live in IndexedDB: no size cap worth worrying about, and nothing leaves the browser.
