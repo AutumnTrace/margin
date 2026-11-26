@@ -54,3 +54,27 @@ test('works offline after the first visit, including math and diagrams', async (
   expect(cached.some((u) => /\/assets\/KaTeX_Main-Regular-[\w-]+\.woff2$/.test(u))).toBe(true)
   expect(cached.some((u) => /\/assets\/sequenceDiagram-/.test(u))).toBe(false)
 })
+
+test('a diagram that could not load offline is drawn once the connection is back', async ({ page, context }) => {
+  await page.goto('/')
+  await expect(page.locator('html')).toHaveAttribute('data-offline', 'ready', { timeout: 15_000 })
+  // As if no diagram had been drawn while online: drop every cached script outside the shell.
+  await page.evaluate(async () => {
+    const runtime = await caches.open('margin-runtime')
+    for (const request of await runtime.keys()) if (request.url.endsWith('.js')) await runtime.delete(request)
+  })
+  const errors: string[] = []
+  page.on('pageerror', (e) => errors.push(e.message))
+
+  await context.setOffline(true)
+  await page.reload()
+  await expect(page.locator(`${preview} h1`)).toHaveText('Welcome to Margin')
+  await expect(page.locator(`${preview} .mermaid`)).toContainText('flowchart LR')
+  await expect(page.locator(`${preview} .mermaid svg`)).toHaveCount(0)
+
+  await context.setOffline(false)
+  await page.getByRole('button', { name: 'New document' }).click()
+  await page.keyboard.type('# Plan\n\n```mermaid\ngraph TD; Pack-->Leave\n```\n')
+  await expect(page.locator(`${preview} .mermaid svg`)).toBeVisible({ timeout: 15_000 })
+  expect(errors).toEqual([])
+})
