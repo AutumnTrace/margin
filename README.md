@@ -11,7 +11,7 @@ Built with **React 19**, **TypeScript**, **CodeMirror 6**, **markdown-it** and *
 ![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![CodeMirror](https://img.shields.io/badge/CodeMirror-6-d30707)
-![Tests](https://img.shields.io/badge/tests-38%20unit%20%C2%B7%2012%20e2e-brightgreen)
+![Tests](https://img.shields.io/badge/tests-39%20unit%20%C2%B7%2014%20e2e-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ### [▶ Open Margin](https://autumntrace.github.io/margin/)
@@ -36,6 +36,7 @@ Built with **React 19**, **TypeScript**, **CodeMirror 6**, **markdown-it** and *
 | ☑️ **A live preview** | Ticking a checkbox in the preview edits the source. Code blocks have a copy button. Heading links and footnotes scroll inside the preview. |
 | ↕️ **Scroll sync** | Every rendered block knows its source line. Whichever pane you're scrolling leads, and positions between blocks are interpolated, so long documents stay aligned. |
 | 💾 **Saves as you type** | Documents live in IndexedDB with a debounced autosave and a status indicator. Pending writes flush when the tab is hidden or closed. |
+| 📴 **Works offline** | After the first visit, a service worker keeps the app, so Margin opens without a connection. Mermaid and the KaTeX fonts are cached the first time a document uses them, not up front. Margin installs as an app, and a new version waits until you pick **Reload**. |
 | 📂 **Real files too** | Open or drop `.md` files anywhere on the window. In Chrome and Edge, `Ctrl S` writes back to the same file on disk through the File System Access API. Elsewhere it downloads a copy. |
 | 🔗 **Share links with no server** | The document is compressed (lz-string) into the URL fragment, which never reaches a server. Opening the link adds the document to the recipient's library. |
 | 📤 **Export** | Markdown, a standalone HTML page with the preview styles inlined (diagrams already drawn), or PDF through a print stylesheet. |
@@ -101,6 +102,7 @@ flowchart LR
 - **`src/editor/`**: the CodeMirror setup, its theme (built from the same CSS tokens as the app) and the formatting commands, which are unit-tested against a real `EditorView`.
 - **`src/components/useScrollSync.ts`**: maps editor height ↔ source line ↔ preview offset through the `data-line` markers. It is re-measured when the preview resizes (images, diagrams, fonts).
 - **`src/lib/mermaid.ts`**: Mermaid is about 1 MB, so it is imported the first time a document contains a diagram. Its SVGs are cached by theme and source, so typing elsewhere doesn't redraw them.
+- **`sw/`**: the service worker and the Vite plugin that builds it. The plugin bakes in this build's app shell: the entry chunk, its static imports, CSS and icons, about 1.9 MB before compression, precached on install. It also bakes in the list of every emitted file. Anything else on that list is cached the first time it is fetched, and dropped once a later build no longer emits it. The page hands over what it loaded before the worker took control, so the first visit counts too.
 
 ## Run it locally
 
@@ -116,11 +118,12 @@ npm run dev          # http://localhost:5173
 | `npm run test:e2e` | Playwright against the production build: desktop Chrome and a Pixel 7 |
 | `npm run lint` | oxlint (React, a11y, TypeScript rules) |
 | `node scripts/screenshots.mjs` | Regenerate the README screenshots from a running preview |
+| `node scripts/icons.mjs` | Render the install icons in `public/` from the favicon |
 
 ## Tests
 
-- **Unit (38)**: rendering (GFM, front matter offsets, math, diagrams, alerts, footnotes, heading ids, and **XSS sanitisation**), share-link round trips, word counts and snippets, fuzzy matching, heading-based file names, every editor command, and the store's create/rename/duplicate/delete/restore with real IndexedDB writes.
-- **End-to-end (12)**: the welcome guide renders, typing persists across a reload, shortcuts and toolbar, live checkboxes, the command palette, share links opened in a second tab, rename/download/delete with undo, script injection attempts, view modes and focus mode, the shortcuts sheet, light diagrams in exports from dark mode, and a mobile run.
+- **Unit (39)**: rendering (GFM, front matter offsets, math, diagrams, alerts, footnotes, heading ids, and **XSS sanitisation**), diagram source kept when Mermaid can't load, share-link round trips, word counts and snippets, fuzzy matching, heading-based file names, every editor command, and the store's create/rename/duplicate/delete/restore with real IndexedDB writes.
+- **End-to-end (14)**: the welcome guide renders, the app and an existing document (math and a diagram) open offline after one visit, a diagram that couldn't load offline draws once the connection is back, typing persists across a reload, shortcuts and toolbar, live checkboxes, the command palette, share links opened in a second tab, rename/download/delete with undo, script injection attempts, view modes and focus mode, the shortcuts sheet, light diagrams in exports from dark mode, and a mobile run.
 
 ## License
 

@@ -2,11 +2,12 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { serviceWorker } from './sw/plugin.ts'
 
 export default defineConfig({
   // GitHub Pages serves the app from /<repo>/; local dev and preview use /.
   base: process.env.BASE_PATH ?? '/',
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), serviceWorker()],
   build: {
     // Mermaid ships big diagram chunks; they load only when a document has a diagram.
     chunkSizeWarningLimit: 1600,

@@ -6,9 +6,24 @@ const cache = new Map<string, string>()
 let counter = 0
 
 // Mermaid is ~1 MB, so it only loads the first time a document actually contains a diagram.
+// A failed load (offline before Mermaid was ever cached) is forgotten, so the next draw retries.
 function load(): Promise<Mermaid> {
-  loading ??= import('mermaid').then((m) => m.default)
+  loading ??= import('mermaid').then(
+    (m) => m.default,
+    (e: unknown) => {
+      loading = null
+      throw e
+    },
+  )
   return loading
+}
+
+async function tryLoad(): Promise<Mermaid | null> {
+  try {
+    return await load()
+  } catch {
+    return null
+  }
 }
 
 // Light-theme token values (see tokens.css), for exports that must look right on paper.
@@ -67,7 +82,9 @@ export async function drawDiagrams(root: HTMLElement, theme: string): Promise<vo
   }
   if (!pending.length) return
 
-  const mermaid = await load()
+  // Without Mermaid the blocks keep showing their source.
+  const mermaid = await tryLoad()
+  if (!mermaid) return
   if (configuredFor !== theme) {
     mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'base', themeVariables: themeVars(), flowchart: { curve: 'basis' } })
     configuredFor = theme
@@ -95,7 +112,8 @@ export async function drawDiagrams(root: HTMLElement, theme: string): Promise<vo
 export async function drawLightDiagrams(root: HTMLElement): Promise<void> {
   const blocks = [...root.querySelectorAll<HTMLElement>('.mermaid[data-source]')]
   if (!blocks.length) return
-  const mermaid = await load()
+  const mermaid = await tryLoad()
+  if (!mermaid) return // Leave the preview's copies in place.
   mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'base', themeVariables: themeVars(LIGHT), flowchart: { curve: 'basis' } })
   configuredFor = '' // The preview re-applies its own theme on the next draw.
   for (const block of blocks) {

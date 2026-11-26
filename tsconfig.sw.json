@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.sw.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "WebWorker"],
+    "types": [],
+    "allowJs": true,
+    "checkJs": true,
+    "skipLibCheck": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["sw/worker.js"]
+}
