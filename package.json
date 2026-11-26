@@ -1,7 +1,7 @@
 {
   "name": "margin",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "A markdown workspace in the browser: live preview, math, diagrams, local library, share links",
   "scripts": {
